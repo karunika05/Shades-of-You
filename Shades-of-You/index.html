@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shades of You</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .shop-img { width:100%; height:100%; object-fit:cover; display:block; border-radius:inherit; }
+    .shop-img-wrap .shop-img { position:absolute; top:0; left:0; }
+  </style>
+</head>
+<body>
+
+<div id="pageTransition"></div>
+
+<div id="authGate">
+  <div class="auth-left">
+    <img src="background.jpeg" alt="Coastal glow skincare" class="auth-hero-img" loading="eager" decoding="async"/>
+  </div>
+
+  <div class="auth-right auth-panel">
+    <p class="auth-welcome-tag">Welcome to</p>
+    <div class="auth-logo">Shades of <em>You</em></div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+
+    <div id="formLogin" class="auth-form active">
+      <h2 class="auth-heading">Welcome<br><em>Back</em></h2>
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="you@email.com"/>
+        <span class="auth-err" id="loginEmailErr"></span>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••"/>
+        <span class="auth-err" id="loginPassErr"></span>
+      </div>
+      <label class="auth-remember">
+        <input type="checkbox" id="loginRemember" checked/>
+        <span>Remember me — stay signed in on this device</span>
+      </label>
+      <p class="auth-forgot">Forgot password?</p>
+      <button class="btn-auth" onclick="doLogin()">Login →</button>
+    </div>
+
+    <div id="formSignup" class="auth-form">
+      <h2 class="auth-heading">Join<br><em>Us</em></h2>
+      <div class="auth-field">
+        <label>Full Name</label>
+        <input type="text" id="signupName" placeholder="Kendall"/>
+        <span class="auth-err" id="signupNameErr"></span>
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="you@email.com"/>
+        <span class="auth-err" id="signupEmailErr"></span>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="signupPass" placeholder="••••••••"/>
+        <span class="auth-err" id="signupPassErr"></span>
+      </div>
+      <div class="auth-field">
+        <label>Confirm Password</label>
+        <input type="password" id="signupPass2" placeholder="••••••••"/>
+        <span class="auth-err" id="signupPass2Err"></span>
+      </div>
+      <button class="btn-auth" onclick="doSignup()">Create Account →</button>
+    </div>
+
+    <p class="auth-guest" onclick="skipAuth()">Continue as Guest →</p>
+  </div>
+</div>
+
+<div id="loader">
+  <p class="loader-logo">Shades of <em>You</em></p>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<nav id="navbar">
+  <div class="nav-container">
+    <span class="nav-logo" onclick="showPage('home')">Shades of <em>You</em></span>
+    <ul class="nav-menu" id="navMenu">
+      <li><span class="nav-link active" id="nl-home" onclick="showPage('home')">Home</span></li>
+      <li><span class="nav-link" id="nl-shop" onclick="showPage('shop')">Shop</span></li>
+      <li><span class="nav-link" id="nl-quiz" onclick="showPage('quiz')">Skin Quiz</span></li>
+      <li><span class="nav-link" id="nl-about" onclick="showPage('about')">About</span></li>
+      <li><span class="nav-link" id="nl-consultation" onclick="showPage('consultation')">Consult</span></li>
+      <li><span class="nav-link" id="nl-contact" onclick="showPage('contact')">Contact</span></li>
+      <li><span class="nav-link" id="nl-checkout" onclick="showPage('checkout')">Checkout</span></li>
+    </ul>
+    <div class="nav-actions">
+      <div class="nav-profile" id="navProfile">
+        <button type="button" class="profile-btn" onclick="toggleProfileMenu()" aria-label="Profile menu">
+          <span class="profile-avatar" id="profileAvatar">G</span>
+          <span class="profile-name" id="profileName">Guest</span>
+          <i class="fas fa-chevron-down profile-chevron"></i>
+        </button>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div id="profileMemberRows">
+            <button type="button" onclick="openMyOrders()"><i class="fas fa-box"></i> My Orders</button>
+            <button type="button" onclick="openMyProgress()"><i class="fas fa-spa"></i> My Skin Quiz</button>
+            <button type="button" onclick="showPage('shop')"><i class="fas fa-bag-shopping"></i> My Bag</button>
+            <button type="button" onclick="logoutUser()"><i class="fas fa-right-from-bracket"></i> Log out</button>
+          </div>
+          <div id="profileGuestRows">
+            <button type="button" onclick="openMyOrders()"><i class="fas fa-box"></i> My Orders</button>
+            <button type="button" onclick="logoutUser()"><i class="fas fa-user"></i> Sign in / Sign up</button>
+          </div>
+        </div>
+      </div>
+      <button class="cart-btn" onclick="toggleCart()">
+        <i class="fas fa-bag-shopping"></i>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+      <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+
+  <section class="hero">
+    <img src="background.jpeg" alt="" class="hero-fallback-img" aria-hidden="true"/>
+    <video autoplay muted loop playsinline class="hero-video" poster="background.jpeg">
+      <!-- VIDEO PLACEHOLDER: replace the src below with your video file when ready -->
+      <source src="video.mp4" type="video/mp4"/>
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-text" data-reveal>
+      <p class="hero-tag">Est. 2024 · Clean Beauty India</p>
+      <h1 class="hero-title">
+        <em>Shades</em><br>
+        <span class="hero-title-sans">OF YOU</span>
+      </h1>
+      <p class="hero-sub">Science-backed formulas built around your unique skin — not anyone else's.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('shop')">Explore Collection</button>
+        <button class="btn-ghost" onclick="showPage('quiz')">Take Skin Quiz</button>
+      </div>
+    </div>
+    <div class="hero-scroll"><div class="scroll-line"></div><span>Scroll</span></div>
+  </section>
+
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <span>CLEAN · </span><span>CONSCIOUS · </span><span>CRAFTED FOR INDIAN SKIN · </span>
+      <span>DERMATOLOGIST TESTED · </span><span>CRUELTY FREE · </span><span>ZERO WHITE CAST · </span>
+      <span>CLEAN · </span><span>CONSCIOUS · </span><span>CRAFTED FOR INDIAN SKIN · </span>
+      <span>DERMATOLOGIST TESTED · </span><span>CRUELTY FREE · </span><span>ZERO WHITE CAST · </span>
+    </div>
+  </div>
+
+  <section class="book-section">
+    <p class="eyebrow-center" data-reveal>THE LOOKBOOK</p>
+    <h2 class="section-title-center" data-reveal>Our <em>Story in Pages</em></h2>
+
+    <div class="book-wrapper" data-reveal>
+      <div class="book" id="book">
+
+        <div class="book-spread active" id="spread-1">
+          <div class="book-page left-page" onclick="turnPage(-1)" title="Previous page">
+            <div class="book-img-placeholder"><img src="mo2.jpg" alt="Product flat-lay" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/></div>
+          </div>
+          <div class="book-page right-page" onclick="turnPage(1)" title="Next page">
+            <p class="book-page-num">01</p>
+            <p class="book-eyebrow">Our Philosophy</p>
+            <h3 class="book-heading">Clean<br><em>From the</em><br>Ground Up</h3>
+            <p class="book-body">Every ingredient is chosen for a reason. No fillers, no shortcuts — just formulas that earn their place on your skin.</p>
+            <p class="book-body">Built for the Indian climate. Tested for Indian skin tones. Celebrated by 12,000+ people across the country.</p>
+            <span class="page-click-hint">↻ Tap to turn</span>
+          </div>
+        </div>
+
+        <div class="book-spread" id="spread-2">
+          <div class="book-page left-page dark-page" onclick="turnPage(-1)" title="Previous page">
+            <p class="book-page-num light">02</p>
+            <p class="book-eyebrow light">Hero Ingredient</p>
+            <h3 class="book-heading light">Bakuchiol —<br><em>Nature's</em><br>Retinol</h3>
+            <p class="book-body light">Clinically proven to reduce fine lines without the irritation of synthetic retinol. Safe for sensitive and pregnant skin.</p>
+            <span class="page-click-hint">← Tap to go back</span>
+          </div>
+          <div class="book-page right-page" onclick="turnPage(1)" title="Next page">
+            <div class="book-img-placeholder"><img src="se1.jpg" alt="Botanical close-up" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/></div>
+            <span class="page-click-hint">↻ Tap to turn</span>
+          </div>
+        </div>
+
+        <div class="book-spread" id="spread-3">
+          <div class="book-page left-page" onclick="turnPage(-1)" title="Previous page">
+            <div class="book-img-placeholder"><img src="t1.jpg" alt="Routine flatlay" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/></div>
+            <span class="page-click-hint">← Tap to go back</span>
+          </div>
+          <div class="book-page right-page" onclick="turnPage(1)" title="Next page">
+            <p class="book-page-num">03</p>
+            <p class="book-eyebrow">Morning Ritual</p>
+            <h3 class="book-heading">Your 4-Step<br><em>Glow</em><br>Routine</h3>
+            <ol class="book-list">
+              <li>Petal Rose Toner — balance &amp; prep</li>
+              <li>Radiance Glow Serum — brighten</li>
+              <li>Velvet Moisturiser — lock in hydration</li>
+              <li>Silk SPF Shield — protect, no white cast</li>
+            </ol>
+            <button class="btn-book" onclick="event.stopPropagation();goShop('all')">Shop the Routine →</button>
+            <span class="page-click-hint">↻ Tap to turn</span>
+          </div>
+        </div>
+
+        <div class="book-spread" id="spread-4">
+          <div class="book-page left-page dark-page" onclick="turnPage(-1)" title="Previous page">
+            <p class="book-page-num light">04</p>
+            <p class="book-eyebrow light">Personalised for You</p>
+            <h3 class="book-heading light">Not Sure<br><em>Where to</em><br>Start?</h3>
+            <p class="book-body light">Our dermatologists have helped 12,000+ people find their perfect routine. Yours takes 30 minutes — and it's free.</p>
+            <button class="btn-book light" onclick="event.stopPropagation();showPage('consultation')">Book Free Consult →</button>
+            <span class="page-click-hint">← Tap to go back</span>
+          </div>
+          <div class="book-page right-page" onclick="turnPage(1)" title="Next page">
+            <div class="book-img-placeholder"><img src="background.jpeg" alt="Consultation setting" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/></div>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="book-nav prev" id="bookPrev" onclick="turnPage(-1)" aria-label="Previous page">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="book-nav next" id="bookNext" onclick="turnPage(1)" aria-label="Next page">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+      <div class="book-dots">
+        <span class="book-dot active" onclick="goToSpread(1)"></span>
+        <span class="book-dot" onclick="goToSpread(2)"></span>
+        <span class="book-dot" onclick="goToSpread(3)"></span>
+        <span class="book-dot" onclick="goToSpread(4)"></span>
+      </div>
+    </div>
+
+    <div class="book-mobile-stack" data-reveal>
+      <div class="book-mobile-card">
+        <div class="book-img-placeholder"><img src="mo4.jpg" alt="Product flat-lay" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/></div>
+        <p class="book-eyebrow">Our Philosophy</p>
+        <h3 class="book-heading">Clean <em>From the Ground Up</em></h3>
+        <p class="book-body">Every ingredient is chosen for a reason — built for Indian climate and skin tones.</p>
+      </div>
+      <div class="book-mobile-card book-mobile-dark">
+        <p class="book-eyebrow light">Hero Ingredient</p>
+        <h3 class="book-heading light">Bakuchiol — <em>Nature's Retinol</em></h3>
+        <p class="book-body light">Clinically proven to reduce fine lines without irritation.</p>
+      </div>
+      <div class="book-mobile-card">
+        <p class="book-eyebrow">Morning Ritual</p>
+        <h3 class="book-heading">Your 4-Step <em>Glow</em> Routine</h3>
+        <button class="btn-book" onclick="goShop('all')">Shop the Routine →</button>
+      </div>
+      <div class="book-mobile-card book-mobile-dark">
+        <p class="book-eyebrow light">Personalised for You</p>
+        <h3 class="book-heading light">Not Sure <em>Where to Start?</em></h3>
+        <button class="btn-book light" onclick="showPage('consultation')">Book Free Consult →</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="category-section">
+    <div class="container">
+      <p class="eyebrow-center" data-reveal>EXPLORE BY CATEGORY</p>
+      <div class="cat-grid" data-reveal>
+        <div class="cat-card" onclick="goShop('serum')">
+          <div class="cat-img-placeholder"><img src="se4.jpg" alt="Serums" style="width:100%;height:100%;object-fit:cover;"/></div>
+          <div class="cat-label"><span>Serums</span><i class="fas fa-arrow-right"></i></div>
+        </div>
+        <div class="cat-card tall" onclick="goShop('moisturiser')">
+          <div class="cat-img-placeholder"><img src="mo1.png"alt="Moisturisers" style="width:100%;height:100%;object-fit:cover;"/></div>
+          <div class="cat-label"><span>Moisturisers</span><i class="fas fa-arrow-right"></i></div>
+        </div>
+        <div class="cat-card" onclick="goShop('spf')">
+          <div class="cat-img-placeholder"><img src="sunscreen3.jpeg" alt="SPF" style="width:100%;height:100%;object-fit:cover;"/></div>
+          <div class="cat-label"><span>SPF</span><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="spotlight-section">
+    <div class="spotlight-grid" data-reveal>
+      <div class="spotlight-img">
+        <img src="se3.jpg" alt="Radiance Glow Serum" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/>
+      </div>
+      <div class="spotlight-text">
+        <p class="eyebrow">Editor's Pick</p>
+        <h2 class="spotlight-heading">Radiance<br><em>Glow Serum</em></h2>
+        <p class="spotlight-desc">10% Niacinamide + Vitamin C + Hyaluronic Acid. Three actives, one bottle, zero compromise. Formulated for Indian humidity.</p>
+        <p class="spotlight-price">₹2,800</p>
+        <button class="btn-primary" onclick="addToCart('Radiance Glow Serum', 2800)">Add to Bag →</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="ingredient-banner" data-reveal>
+    <div class="ingredient-overlay"></div>
+    <div class="ingredient-text">
+      <p>"Every formula starts with one question —<br><em>what does your skin actually need?"</em></p>
+    </div>
+  </section>
+
+  <section class="promise-section">
+    <div class="container">
+      <div class="promise-grid" data-reveal>
+        <div class="promise-card"><i class="fas fa-leaf"></i><h4>100% Clean</h4><p>No parabens, sulfates or dyes</p></div>
+        <div class="promise-card"><i class="fas fa-microscope"></i><h4>Lab Tested</h4><p>Certified by dermatologists</p></div>
+        <div class="promise-card"><i class="fas fa-seedling"></i><h4>Eco Packed</h4><p>Recyclable glass packaging</p></div>
+        <div class="promise-card"><i class="fas fa-heart"></i><h4>Cruelty Free</h4><p>PETA certified, always</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testi-section">
+    <div class="container">
+      <p class="eyebrow" data-reveal>Real Reviews</p>
+      <h2 class="section-title" data-reveal>What Our Customers <em>Say</em></h2>
+      <div class="testi-grid" data-reveal>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>"My skin has never looked this calm. The serum absorbed instantly — no greasiness, just a dewy glow I've been chasing for years."</p>
+          <div class="testi-author"><div class="testi-avatar-placeholder">PS</div><div><strong>Priya S.</strong><span>Mumbai · Sensitive Skin</span></div></div>
+        </div>
+        <div class="testi-card testi-dark">
+          <div class="stars">★★★★★</div>
+          <p>"The consultation changed everything. A routine that cleared my dark spots in just 6 weeks. I wish I found this brand sooner."</p>
+          <div class="testi-author"><div class="testi-avatar-placeholder">AK</div><div><strong>Ananya K.</strong><span>Delhi · Oily + Acne Prone</span></div></div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>"Finally a brand that understands Indian skin. The SPF is invisible and I actually look forward to applying it every morning."</p>
+          <div class="testi-author"><div class="testi-avatar-placeholder">RM</div><div><strong>Riya M.</strong><span>Bangalore · Combination</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-img-placeholder"></div>
+    <div class="cta-overlay"></div>
+    <div class="cta-content" data-reveal>
+      <p class="eyebrow-white">Your Skin Awaits</p>
+      <h2>Your Best Skin<br><em>Starts Today</em></h2>
+      <p>Free consultation · Free shipping above ₹2,500 · 15-day returns</p>
+      <button class="btn-white" onclick="showPage('consultation')">Book Free Consultation</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-logo">Shades of <em>You</em></p>
+          <p class="footer-sub">Skincare as unique as you are.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest"></i></a>
+            <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-heading">Explore</p>
+          <ul>
+            <li><a onclick="showPage('shop')">Shop</a></li>
+            <li><a onclick="showPage('quiz')">Skin Quiz</a></li>
+            <li><a onclick="showPage('about')">About</a></li>
+            <li><a onclick="showPage('consultation')">Consult</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Help</p>
+          <ul>
+            <li><a href="#">Shipping</a></li>
+            <li><a href="#">Returns</a></li>
+            <li><a href="#">FAQs</a></li>
+            <li><a onclick="showPage('contact')">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Newsletter</p>
+          <p class="footer-sub">Get skincare tips and new launches.</p>
+          <div class="nl-wrap">
+            <input type="email" id="nlEmail" placeholder="Your email"/>
+            <button onclick="nlSub()" aria-label="Subscribe"><i class="fas fa-arrow-right"></i></button>
+          </div>
+          <p id="nlMsg" class="nl-msg"></p>
+        </div>
+      </div>
+      <hr class="footer-line"/>
+      <p class="footer-copy">&copy; 2024 Shades of You · Made with care, for every skin.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- SHOP -->
+<div id="page-shop" class="page">
+  <div class="page-header">
+    <p class="eyebrow-white">Our Collection</p>
+    <h1>Shop <em>Everything</em></h1>
+    <p class="page-header-sub">Clean formulas crafted for Indian skin and climate.</p>
+  </div>
+  <section class="shop-section">
+    <div class="container">
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="spf">SPF</button>
+        <button class="filter-btn" data-filter="moisturiser">Moisturiser</button>
+        <button class="filter-btn" data-filter="serum">Serum</button>
+        <button class="filter-btn" data-filter="cleanser">Cleanser</button>
+        <button class="filter-btn" data-filter="toner">Toner</button>
+        <button class="filter-btn" data-filter="lipbalm">Lip Balm</button>
+        <button class="filter-btn" data-filter="mask">Mask</button>
+        <button class="filter-btn" data-filter="scrub">Scrub</button>
+        <button class="filter-btn" data-filter="tools">Tools</button>
+      </div>
+      <div class="shop-grid">
+
+        <div class="shop-item" data-cat="spf" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="sunscreen1.jpg" alt="Solar Mate Daily SPF 40" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Solar Mate Daily SPF 40', 2400)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Solar Mate Daily SPF 40</p>
+            <p class="shop-price">₹2,400</p>
+            <button class="btn-add-full" onclick="addToCart('Solar Mate Daily SPF 40', 2400)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="spf" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="sunscreen2.jpeg" alt="Vacation Classic Lotion SPF 50" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Vacation Classic Lotion SPF 50', 899)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Vacation Classic Lotion SPF 50</p>
+            <p class="shop-price">₹899</p>
+            <button class="btn-add-full" onclick="addToCart('Vacation Classic Lotion SPF 50', 899)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="spf" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="sunscreen3.jpeg" alt="Desert Sun SPF 50+" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Desert Sun SPF 50+', 2200)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Desert Sun SPF 50+</p>
+            <p class="shop-price">₹2,200</p>
+            <button class="btn-add-full" onclick="addToCart('Desert Sun SPF 50+', 2200)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="spf" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="sunscreen4.jpeg" alt="Hyphen All In Need SPF 50+" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Hyphen All In Need SPF 50+', 1800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Hyphen All In Need SPF 50+</p>
+            <p class="shop-price">₹1,800</p>
+            <button class="btn-add-full" onclick="addToCart('Hyphen All In Need SPF 50+', 1800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="spf" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="sunscreen5.jpeg" alt="Kindfield Cloud Cover SPF 35" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Kindfield Cloud Cover SPF 35', 2600)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Kindfield Cloud Cover SPF 35</p>
+            <p class="shop-price">₹2,600</p>
+            <button class="btn-add-full" onclick="addToCart('Kindfield Cloud Cover SPF 35', 2600)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="spf" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="sunscreen6.jpeg" alt="Mineral Cloud Cover SPF 35" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Mineral Cloud Cover SPF 35', 2900)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Mineral Cloud Cover SPF 35</p>
+            <p class="shop-price">₹2,900</p>
+            <button class="btn-add-full" onclick="addToCart('Mineral Cloud Cover SPF 35', 2900)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="moisturiser" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="mo1.png" alt="Revoir Re-new Face Cream" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Revoir Re-new Face Cream', 3200)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Revoir Re-new Face Cream</p>
+            <p class="shop-price">₹3,200</p>
+            <button class="btn-add-full" onclick="addToCart('Revoir Re-new Face Cream', 3200)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="moisturiser" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="mo2.jpg" alt="Fenty Skin Hydra Vizor Moisturizer" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Fenty Skin Hydra Vizor Moisturizer', 3500)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Fenty Skin Hydra Vizor Moisturizer</p>
+            <p class="shop-price">₹3,500</p>
+            <button class="btn-add-full" onclick="addToCart('Fenty Skin Hydra Vizor Moisturizer', 3500)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="moisturiser" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="mo3.jpg" alt="Fenty Skin Whipped Body Butter" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Fenty Skin Whipped Body Butter', 2800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Fenty Skin Whipped Body Butter</p>
+            <p class="shop-price">₹2,800</p>
+            <button class="btn-add-full" onclick="addToCart('Fenty Skin Whipped Body Butter', 2800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="moisturiser" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="mo4.jpg" alt="Barely There Cloud Moisturiser" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Barely There Cloud Moisturiser', 2800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Barely There Cloud Moisturiser</p>
+            <p class="shop-price">₹2,800</p>
+            <button class="btn-add-full" onclick="addToCart('Barely There Cloud Moisturiser', 2800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="serum" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="se1.jpg" alt="The Peach Nectar Glass Serum" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('The Peach Nectar Glass Serum', 2600)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">The Peach Nectar Glass Serum</p>
+            <p class="shop-price">₹2,600</p>
+            <button class="btn-add-full" onclick="addToCart('The Peach Nectar Glass Serum', 2600)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="serum" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="se2.jpg" alt="The Reposé Thermal Calm Serum" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('The Reposé Thermal Calm Serum', 3500)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">The Reposé Thermal Calm Serum</p>
+            <p class="shop-price">₹3,500</p>
+            <button class="btn-add-full" onclick="addToCart('The Reposé Thermal Calm Serum', 3500)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="serum" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="se3.jpg" alt="The Citron Luminary Serum" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('The Citron Luminary Serum', 3000)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">The Citron Luminary Serum</p>
+            <p class="shop-price">₹3,000</p>
+            <button class="btn-add-full" onclick="addToCart('The Citron Luminary Serum', 3000)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="serum" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="se4.jpg" alt="The Vegan Bio-Cica Infusion" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('The Vegan Bio-Cica Infusion', 4800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">The Vegan Bio-Cica Infusion</p>
+            <p class="shop-price">₹4,800</p>
+            <button class="btn-add-full" onclick="addToCart('The Vegan Bio-Cica Infusion', 4800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="serum" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="se5.jpg" alt="The Royal Propolis Amber Elixir" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('The Royal Propolis Amber Elixir', 4800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">The Royal Propolis Amber Elixir</p>
+            <p class="shop-price">₹4,800</p>
+            <button class="btn-add-full" onclick="addToCart('The Royal Propolis Amber Elixir', 4800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="cleanser" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="c1.jpg" alt="Petal Rose Cream Cleanser" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Petal Rose Cream Cleanser', 1600)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Petal Rose Cream Cleanser</p>
+            <p class="shop-price">₹1,600</p>
+            <button class="btn-add-full" onclick="addToCart('Petal Rose Cream Cleanser', 1600)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="cleanser" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="c2.jpg" alt="Pink Dew Gel Cleanser" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Pink Dew Gel Cleanser', 1800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Pink Dew Gel Cleanser</p>
+            <p class="shop-price">₹1,800</p>
+            <button class="btn-add-full" onclick="addToCart('Pink Dew Gel Cleanser', 1800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="cleanser" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="c3.jpg" alt="Summer Breeze Foam Cleanser" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Summer Breeze Foam Cleanser', 1700)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Summer Breeze Foam Cleanser</p>
+            <p class="shop-price">₹1,700</p>
+            <button class="btn-add-full" onclick="addToCart('Summer Breeze Foam Cleanser', 1700)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="cleanser" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="c4.jpg" alt="Rice Milk Cleansing Balm" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Rice Milk Cleansing Balm', 2200)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Rice Milk Cleansing Balm</p>
+            <p class="shop-price">₹2,200</p>
+            <button class="btn-add-full" onclick="addToCart('Rice Milk Cleansing Balm', 2200)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="cleanser" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="c5.jpg" alt="Centella Calm Micellar Wash" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Centella Calm Micellar Wash', 1900)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Centella Calm Micellar Wash</p>
+            <p class="shop-price">₹1,900</p>
+            <button class="btn-add-full" onclick="addToCart('Centella Calm Micellar Wash', 1900)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="toner" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="t1.jpg" alt="Petal Rose Toner" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Petal Rose Toner', 1800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Petal Rose Toner</p>
+            <p class="shop-price">₹1,800</p>
+            <button class="btn-add-full" onclick="addToCart('Petal Rose Toner', 1800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="toner" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="t2.jpg" alt="Rice Toner" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Rice Toner', 1800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Rice Toner</p>
+            <p class="shop-price">₹1,800</p>
+            <button class="btn-add-full" onclick="addToCart('Rice Toner', 1800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="toner" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="t3.jpg" alt="Lavender Botanical Toner" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Lavender Botanical Toner', 2200)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Lavender Botanical Toner</p>
+            <p class="shop-price">₹2,200</p>
+            <button class="btn-add-full" onclick="addToCart('Lavender Botanical Toner', 2200)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="toner" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="t4.jpg" alt="Centella Toning Toner" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Centella Toning Toner', 2800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Centella Toning Toner</p>
+            <p class="shop-price">₹2,800</p>
+            <button class="btn-add-full" onclick="addToCart('Centella Toning Toner', 2800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="toner" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="t5.jpg" alt="Cucumber Essence Toner" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Cucumber Essence Toner', 1600)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Cucumber Essence Toner</p>
+            <p class="shop-price">₹1,600</p>
+            <button class="btn-add-full" onclick="addToCart('Cucumber Essence Toner', 1600)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="mask" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="m1.jpg" alt="Rejuvenating Caviar Mask" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Rejuvenating Caviar Mask', 2600)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Rejuvenating Caviar Mask</p>
+            <p class="shop-price">₹2,600</p>
+            <button class="btn-add-full" onclick="addToCart('Rejuvenating Caviar Mask', 2600)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="mask" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="m2.jpg" alt="Fruit Series Hydrating Mask" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Fruit Series Hydrating Mask', 1800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Fruit Series Hydrating Mask</p>
+            <p class="shop-price">₹1,800</p>
+            <button class="btn-add-full" onclick="addToCart('Fruit Series Hydrating Mask', 1800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="mask" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="m3.jpg" alt="Green Tea Cica Collagen Mask" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Green Tea Cica Collagen Mask', 2200)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Green Tea Cica Collagen Mask</p>
+            <p class="shop-price">₹2,200</p>
+            <button class="btn-add-full" onclick="addToCart('Green Tea Cica Collagen Mask', 2200)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="mask" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="m4.jpeg" alt="Lip Sleeping Mask Pink Vanilla" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Lip Sleeping Mask Pink Vanilla', 1600)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Lip Sleeping Mask Pink Vanilla</p>
+            <p class="shop-price">₹1,600</p>
+            <button class="btn-add-full" onclick="addToCart('Lip Sleeping Mask Pink Vanilla', 1600)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="mask" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="m5.jpeg" alt="Purifying Blue Clay Mask" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Purifying Blue Clay Mask', 2800)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Purifying Blue Clay Mask</p>
+            <p class="shop-price">₹2,800</p>
+            <button class="btn-add-full" onclick="addToCart('Purifying Blue Clay Mask', 2800)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="mask" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="m6.jpeg" alt="Lip Sleeping Mask Cotton Candy" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Lip Sleeping Mask Cotton Candy', 1600)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Lip Sleeping Mask Cotton Candy</p>
+            <p class="shop-price">₹1,600</p>
+            <button class="btn-add-full" onclick="addToCart('Lip Sleeping Mask Cotton Candy', 1600)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="lipbalm" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="lip1.jpg" alt="Brillare Lip Balm Rose" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Brillare Lip Balm Rose', 699)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Brillare Lip Balm Rose</p>
+            <p class="shop-price">₹699</p>
+            <button class="btn-add-full" onclick="addToCart('Brillare Lip Balm Rose', 699)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="lipbalm" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="lip2.jpg" alt="Rhode Peptide Lip Tint" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Rhode Peptide Lip Tint', 1400)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Rhode Peptide Lip Tint</p>
+            <p class="shop-price">₹1,400</p>
+            <button class="btn-add-full" onclick="addToCart('Rhode Peptide Lip Tint', 1400)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="lipbalm" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="lip3.jpg" alt="Rhode Peptide Lip Treatment" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Rhode Peptide Lip Treatment', 1600)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Rhode Peptide Lip Treatment</p>
+            <p class="shop-price">₹1,600</p>
+            <button class="btn-add-full" onclick="addToCart('Rhode Peptide Lip Treatment', 1600)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="lipbalm" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="lip4.jpg" alt="Laneige Lip Glowy Balm Blueberry" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Laneige Lip Glowy Balm Blueberry', 1200)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Laneige Lip Glowy Balm Blueberry</p>
+            <p class="shop-price">₹1,200</p>
+            <button class="btn-add-full" onclick="addToCart('Laneige Lip Glowy Balm Blueberry', 1200)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="scrub" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="s1.jpg" alt="Daisy Pineapple Glow Scrub" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Daisy Pineapple Glow Scrub', 2200)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Daisy Pineapple Glow Scrub</p>
+            <p class="shop-price">₹2,200</p>
+            <button class="btn-add-full" onclick="addToCart('Daisy Pineapple Glow Scrub', 2200)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="scrub" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="s2.jpg" alt="Peach Whip Sugar Polish" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Peach Whip Sugar Polish', 2300)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Peach Whip Sugar Polish</p>
+            <p class="shop-price">₹2,300</p>
+            <button class="btn-add-full" onclick="addToCart('Peach Whip Sugar Polish', 2300)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="scrub" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="s3.jpg" alt="The Act Dew Body Butter" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('The Act Dew Body Butter', 2500)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">The Act Dew Body Butter</p>
+            <p class="shop-price">₹2,500</p>
+            <button class="btn-add-full" onclick="addToCart('The Act Dew Body Butter', 2500)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="tools" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="tool1.jpg" alt="Éclat Rose Ritual Set" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Éclat Rose Ritual Set', 1999)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Éclat Rose Ritual Set</p>
+            <p class="shop-price">₹1,999</p>
+            <button class="btn-add-full" onclick="addToCart('Éclat Rose Ritual Set', 1999)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="tools" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="tool2.jpg" alt="The Jadeite Contour Collection" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('The Jadeite Contour Collection', 3000)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">The Jadeite Contour Collection</p>
+            <p class="shop-price">₹3,000</p>
+            <button class="btn-add-full" onclick="addToCart('The Jadeite Contour Collection', 3000)">Add to Bag</button>
+          </div>
+        </div>
+
+        <div class="shop-item" data-cat="tools" data-reveal>
+          <div class="shop-img-wrap">
+            <img src="tool3.jpg" alt="Glacé Contour Facial Massager" class="shop-img"/>
+            <button class="quick-add" onclick="addToCart('Glacé Contour Facial Massager', 2500)">Quick Add</button>
+          </div>
+          <div class="shop-info">
+            <p class="shop-name">Glacé Contour Facial Massager</p>
+            <p class="shop-price">₹2,500</p>
+            <button class="btn-add-full" onclick="addToCart('Glacé Contour Facial Massager', 2500)">Add to Bag</button>
+          </div>
+        </div>
+
+        
+       
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <footer class="footer"><div class="container"><hr class="footer-line"/><p class="footer-copy">&copy; 2024 Shades of You.</p></div></footer>
+</div>
+
+<!-- QUIZ -->
+<div id="page-quiz" class="page">
+  <div class="quiz-intro" id="quizIntro">
+    <p class="eyebrow-white">SKIN QUIZ</p>
+    <h1 class="quiz-intro-title">Find Your<br><em>Skin Story</em></h1>
+    <p class="quiz-intro-sub">5 questions. 2 minutes. A routine built for you — by AI + dermatologists.</p>
+    <button class="btn-quiz-start" onclick="startQuiz()">Start Quiz →</button>
+  </div>
+
+  <div class="quiz-body" id="quizBody" style="display:none">
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizFill"></div></div>
+    <p class="quiz-step-label" id="quizStepLabel">Question 1 of 5</p>
+
+    <div class="quiz-question active" id="qq1">
+      <h2 class="quiz-q-title">How does your skin feel<br><em>by midday?</em></h2>
+      <div class="quiz-options" id="opts1">
+        <button class="quiz-opt" data-val="dry" onclick="selectOpt(1, this)">Tight &amp; flaky</button>
+        <button class="quiz-opt" data-val="oily" onclick="selectOpt(1, this)">Shiny all over</button>
+        <button class="quiz-opt" data-val="combination" onclick="selectOpt(1, this)">Oily T-zone only</button>
+        <button class="quiz-opt" data-val="normal" onclick="selectOpt(1, this)">Balanced &amp; comfortable</button>
+        <button class="quiz-opt" data-val="sensitive" onclick="selectOpt(1, this)">Reactive &amp; red</button>
+      </div>
+      <button class="btn-quiz-next" onclick="quizNext(1)" id="qnext1" disabled>Next →</button>
+    </div>
+
+    <div class="quiz-question" id="qq2">
+      <h2 class="quiz-q-title">How often do you<br><em>get breakouts?</em></h2>
+      <div class="quiz-options" id="opts2">
+        <button class="quiz-opt" data-val="rarely" onclick="selectOpt(2, this)">Rarely</button>
+        <button class="quiz-opt" data-val="occasionally" onclick="selectOpt(2, this)">Occasionally</button>
+        <button class="quiz-opt" data-val="often" onclick="selectOpt(2, this)">Often</button>
+        <button class="quiz-opt" data-val="very-often" onclick="selectOpt(2, this)">Very often</button>
+        <button class="quiz-opt" data-val="stress" onclick="selectOpt(2, this)">Only when stressed</button>
+      </div>
+      <button class="btn-quiz-prev" onclick="quizPrev(2)">← Back</button>
+      <button class="btn-quiz-next" onclick="quizNext(2)" id="qnext2" disabled>Next →</button>
+    </div>
+
+    <div class="quiz-question" id="qq3">
+      <h2 class="quiz-q-title">What's your top<br><em>skin concern?</em></h2>
+      <div class="quiz-options" id="opts3">
+        <button class="quiz-opt" data-val="dullness" onclick="selectOpt(3, this)">Dullness</button>
+        <button class="quiz-opt" data-val="acne" onclick="selectOpt(3, this)">Acne &amp; pores</button>
+        <button class="quiz-opt" data-val="aging" onclick="selectOpt(3, this)">Fine lines</button>
+        <button class="quiz-opt" data-val="pigmentation" onclick="selectOpt(3, this)">Dark spots</button>
+        <button class="quiz-opt" data-val="redness" onclick="selectOpt(3, this)">Redness</button>
+        <button class="quiz-opt" data-val="dryness" onclick="selectOpt(3, this)">Dryness</button>
+      </div>
+      <button class="btn-quiz-prev" onclick="quizPrev(3)">← Back</button>
+      <button class="btn-quiz-next" onclick="quizNext(3)" id="qnext3" disabled>Next →</button>
+    </div>
+
+    <div class="quiz-question" id="qq4">
+      <h2 class="quiz-q-title">How does your skin react<br><em>to new products?</em></h2>
+      <div class="quiz-options" id="opts4">
+        <button class="quiz-opt" data-val="fine" onclick="selectOpt(4, this)">Fine usually</button>
+        <button class="quiz-opt" data-val="sometimes" onclick="selectOpt(4, this)">Sometimes irritated</button>
+        <button class="quiz-opt" data-val="always" onclick="selectOpt(4, this)">Always sensitive</button>
+        <button class="quiz-opt" data-val="depends" onclick="selectOpt(4, this)">Depends on ingredients</button>
+      </div>
+      <button class="btn-quiz-prev" onclick="quizPrev(4)">← Back</button>
+      <button class="btn-quiz-next" onclick="quizNext(4)" id="qnext4" disabled>Next →</button>
+    </div>
+
+    <div class="quiz-question" id="qq5">
+      <h2 class="quiz-q-title">What's your<br><em>current routine?</em></h2>
+      <div class="quiz-options" id="opts5">
+        <button class="quiz-opt" data-val="minimal" onclick="selectOpt(5, this)">Minimal (1–2 steps)</button>
+        <button class="quiz-opt" data-val="basic" onclick="selectOpt(5, this)">Basic (cleanse + moisturise)</button>
+        <button class="quiz-opt" data-val="full" onclick="selectOpt(5, this)">Full routine</button>
+        <button class="quiz-opt" data-val="unsure" onclick="selectOpt(5, this)">Not sure</button>
+      </div>
+      <button class="btn-quiz-prev" onclick="quizPrev(5)">← Back</button>
+      <button class="btn-quiz-next" onclick="submitQuiz()" id="qnext5" disabled>See My Results →</button>
+    </div>
+  </div>
+
+  <div class="quiz-results" id="quizResults" style="display:none">
+    <p class="eyebrow-center">YOUR SKIN PROFILE</p>
+    <h2 class="results-heading" id="resultsSkinType">Combination-Prone Skin</h2>
+
+    <div class="ai-analysis-card" id="aiAnalysis">
+      <div class="ai-loading" id="aiLoading">
+        <div class="ai-dots"><span></span><span></span><span></span></div>
+        <p>Analysing your skin profile...</p>
+      </div>
+      <div class="ai-text" id="aiText" style="display:none"></div>
+    </div>
+
+    <p class="eyebrow-center">RECOMMENDED FOR YOU</p>
+    <div class="results-products" id="resultsProducts"></div>
+
+    <div class="results-cta">
+      <button class="btn-primary" onclick="showPage('consultation')">Book Free Consultation →</button>
+      <button class="btn-ghost" onclick="resetQuiz()">Retake Quiz</button>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="page">
+  <div class="about-hero">
+    <img src="background.jpeg" alt="Built for Indian Skin" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;"/>
+    <div class="about-hero-overlay">
+      <h1>Built for<br><em>Indian Skin</em></h1>
+    </div>
+  </div>
+  <section class="about-section">
+    <div class="container">
+      <div class="about-layout" data-reveal>
+        <div class="about-img-wrap">
+          <div class="about-img-placeholder"><img src="about.jpeg" alt="Brand story" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/></div>
+          <div class="about-badge"><span class="badge-num">12K+</span><span class="badge-lbl">Transformations</span></div>
+        </div>
+        <div class="about-text">
+          <p class="eyebrow">Our Story</p>
+          <h2 class="section-title">Born from Frustration,<br><em>Built with Care</em></h2>
+          <p>Shades of You started with one question: why does skincare feel universal when every skin is so different? We set out to build formulas for Indian climate, tone, and texture — not imported ideals.</p>
+          <p>Today, our dermatologists and chemists work together on every bottle — clean ingredients, transparent labels, and routines that actually fit your life.</p>
+          <button class="btn-primary" onclick="showPage('consultation')">Book a Free Consult →</button>
+        </div>
+      </div>
+
+      <div class="stats-grid" data-reveal>
+        <div class="stat-item"><span class="stat-num" data-target="12000">0</span><span class="stat-lbl">Happy Customers</span></div>
+        <div class="stat-item"><span class="stat-num" data-target="48">0</span><span class="stat-lbl">Active Products</span></div>
+        <div class="stat-item"><span class="stat-num" data-target="8">0</span><span class="stat-lbl">Dermatologists</span></div>
+        <div class="stat-item"><span class="stat-num" data-target="100">0</span><span class="stat-lbl">% Cruelty Free</span></div>
+      </div>
+
+      <div class="team-section" data-reveal>
+        <p class="eyebrow-center">THE TEAM</p>
+        <h2 class="section-title-center">People Behind <em>Your Glow</em></h2>
+        <div class="team-grid">
+          <div class="team-card">
+            <div class="team-img-placeholder">[ADD IMAGE — 400×400px headshot]</div>
+            <p class="team-name">Meera Joshi</p>
+            <p class="team-role">Founder &amp; CEO</p>
+          </div>
+          <div class="team-card">
+            <div class="team-img-placeholder">[ADD IMAGE — 400×400px headshot]</div>
+            <p class="team-name">Dr. Ananya</p>
+            <p class="team-role">Chief Dermatologist</p>
+          </div>
+          <div class="team-card">
+            <div class="team-img-placeholder">[ADD IMAGE — 400×400px headshot]</div>
+            <p class="team-name">Rohan</p>
+            <p class="team-role">Head of Product</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer class="footer"><div class="container"><hr class="footer-line"/><p class="footer-copy">&copy; 2024 Shades of You.</p></div></footer>
+</div>
+
+<!-- CONSULTATION -->
+<div id="page-consultation" class="page">
+  <div class="page-header">
+    <p class="eyebrow-white">Complimentary</p>
+    <h1>Book Your <em>Skin Consultation</em></h1>
+    <p class="page-header-sub">30 minutes · One expert · Zero cost</p>
+  </div>
+  <section class="consult-section">
+    <div class="container">
+      <div class="consult-layout">
+        <div class="consult-form-wrap">
+          <div class="step-track">
+            <div class="step-item"><div class="step-dot active" id="dot1">1</div><span class="step-lbl active" id="lbl1">About You</span></div>
+            <div class="step-line" id="line1"></div>
+            <div class="step-item"><div class="step-dot" id="dot2">2</div><span class="step-lbl" id="lbl2">Your Skin</span></div>
+            <div class="step-line" id="line2"></div>
+            <div class="step-item"><div class="step-dot" id="dot3">3</div><span class="step-lbl" id="lbl3">Schedule</span></div>
+          </div>
+          <div class="form-card">
+            <div class="form-step active" id="step1">
+              <h3 class="form-title">About yourself</h3>
+              <div class="form-row">
+                <div class="form-group"><label>Full Name *</label><input type="text" id="cName" placeholder="Priya Sharma"/><span class="form-error" id="cNameErr"></span></div>
+                <div class="form-group"><label>Email *</label><input type="email" id="cEmail" placeholder="priya@email.com"/><span class="form-error" id="cEmailErr"></span></div>
+              </div>
+              <div class="form-group"><label>Age Range *</label><select id="cAge"><option value="">Select</option><option>16-20</option><option>21-25</option><option>26-30</option><option>31-40</option><option>41+</option></select><span class="form-error" id="cAgeErr"></span></div>
+              <button class="btn-primary" onclick="cNext(1)">Continue →</button>
+            </div>
+            <div class="form-step" id="step2">
+              <h3 class="form-title">Your skin</h3>
+              <div class="form-row">
+                <div class="form-group"><label>Skin Type *</label><select id="cSkin"><option value="">Select</option><option>Dry</option><option>Oily</option><option>Combination</option><option>Sensitive</option><option>Normal</option></select><span class="form-error" id="cSkinErr"></span></div>
+                <div class="form-group"><label>Main Concern *</label><select id="cConcern"><option value="">Select</option><option>Acne and Breakouts</option><option>Dark Spots</option><option>Dullness</option><option>Dryness</option><option>Anti-ageing</option><option>Redness</option></select><span class="form-error" id="cConcernErr"></span></div>
+              </div>
+              <div class="form-btns"><button class="btn-outline" onclick="cPrev(2)">← Back</button><button class="btn-primary" onclick="cNext(2)">Continue →</button></div>
+            </div>
+            <div class="form-step" id="step3">
+              <h3 class="form-title">Choose your slot</h3>
+              <div class="form-row">
+                <div class="form-group"><label>Date *</label><input type="date" id="cDate"/><span class="form-error" id="cDateErr"></span></div>
+                <div class="form-group"><label>Time *</label><select id="cTime"><option value="">Select slot</option><option>10:00 - 10:30 AM</option><option>11:00 - 11:30 AM</option><option>2:00 - 2:30 PM</option><option>5:00 - 5:30 PM</option></select><span class="form-error" id="cTimeErr"></span></div>
+              </div>
+              <div class="form-btns"><button class="btn-outline" onclick="cPrev(3)">← Back</button><button class="btn-primary" onclick="cSubmit()">Confirm Booking ✓</button></div>
+            </div>
+            <div class="form-step" id="stepOk">
+              <div class="success-wrap">
+                <div class="success-icon">✓</div>
+                <h3>You're all booked!</h3>
+                <p>Our dermatologist will confirm your slot within 24 hours. Check your inbox!</p>
+                <button class="btn-primary" onclick="showPage('shop')">Shop the Collection →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="consult-side">
+          <p class="side-heading">What to Expect</p>
+          <ul class="expect-list">
+            <li><i class="fas fa-check-circle"></i> 30-min personalised session</li>
+            <li><i class="fas fa-check-circle"></i> Custom routine plan</li>
+            <li><i class="fas fa-check-circle"></i> Product recommendations</li>
+            <li><i class="fas fa-check-circle"></i> Follow-up care guide</li>
+            <li><i class="fas fa-check-circle"></i> Completely free</li>
+          </ul>
+          <div class="expert-card">
+            <div class="expert-img-placeholder">[ADD IMAGE]</div>
+            <div><strong>Dr. Ananya</strong><span>Certified Dermatologist · 8 yrs</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer class="footer"><div class="container"><hr class="footer-line"/><p class="footer-copy">&copy; 2024 Shades of You.</p></div></footer>
+</div>
+
+<!-- CONTACT -->
+<div id="page-contact" class="page">
+  <div class="page-header" style="position:relative; overflow:hidden;">
+    <img src="contact.jpeg" alt="Contact background" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.12;z-index:0;"/>
+    <div style="position:relative;z-index:1;">
+    <p class="eyebrow-white">We are Here</p>
+    <h1>Let us <em>Talk Skincare</em></h1>
+    <p class="page-header-sub">Questions, feedback, or just want to say hello.</p>
+    </div>
+  </div>
+  <section class="contact-section">
+    <div class="container">
+      <div class="contact-layout">
+        <div class="form-card">
+          <h3 class="form-title">Send a Message</h3>
+          <div class="form-row">
+            <div class="form-group"><label>Your Name *</label><input type="text" id="ctName" placeholder="Anjali Gupta"/><span class="form-error" id="ctNameErr"></span></div>
+            <div class="form-group"><label>Email *</label><input type="email" id="ctEmail" placeholder="anjali@email.com"/><span class="form-error" id="ctEmailErr"></span></div>
+          </div>
+          <div class="form-group"><label>Subject *</label><select id="ctSubject"><option value="">Select subject</option><option>Product Question</option><option>Order and Shipping</option><option>Consultation</option><option>Feedback</option><option>Other</option></select><span class="form-error" id="ctSubjectErr"></span></div>
+          <div class="form-group"><label>Message *</label><textarea id="ctMsg" rows="5" placeholder="Write your message here..."></textarea><span class="form-error" id="ctMsgErr"></span></div>
+          <button class="btn-primary" onclick="ctSubmit()">Send Message →</button>
+          <p id="ctSuccess" style="display:none">✓ Message sent! We will reply within 24 hours.</p>
+        </div>
+        <div class="contact-info">
+          <h4>Get in Touch</h4>
+          <div class="contact-row"><i class="fas fa-envelope"></i><div><strong>Email</strong><p>hello@shadesofyou.in</p></div></div>
+          <div class="contact-row"><i class="fas fa-phone"></i><div><strong>Phone</strong><p>+91 98765 43210</p></div></div>
+          <div class="contact-row"><i class="fas fa-clock"></i><div><strong>Hours</strong><p>Mon to Sat, 10 AM to 6 PM IST</p></div></div>
+          <div class="contact-row"><i class="fas fa-map-marker-alt"></i><div><strong>Studio</strong><p>Bandra West, Mumbai 400050</p></div></div>
+          <div class="contact-social">
+            <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+            <a href="#"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <div class="map-placeholder" data-reveal>
+        [PASTE GOOGLE MAPS IFRAME HERE]
+      </div>
+    </div>
+  </section>
+  <footer class="footer"><div class="container"><hr class="footer-line"/><p class="footer-copy">&copy; 2024 Shades of You. All rights reserved.</p></div></footer>
+</div>
+
+<!-- CHECKOUT -->
+<div id="page-checkout" class="page">
+  <div class="page-header">
+    <p class="eyebrow-white">Almost There</p>
+    <h1>Secure <em>Checkout</em></h1>
+    <p class="page-header-sub">Your skin is waiting — complete your order below.</p>
+  </div>
+
+  <div class="checkout-layout">
+
+    <!-- LEFT: Form -->
+    <div class="checkout-form-card">
+
+      <!-- Delivery details -->
+      <div class="checkout-section">
+        <p class="checkout-section-title"><span class="cs-num">1</span> Delivery Details</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="ckName" placeholder="Priya Sharma"/>
+            <span class="form-error" id="ckNameErr"></span>
+          </div>
+          <div class="form-group">
+            <label>Phone *</label>
+            <input type="tel" id="ckPhone" placeholder="+91 98765 43210"/>
+            <span class="form-error" id="ckPhoneErr"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="ckEmail" placeholder="priya@email.com"/>
+          <span class="form-error" id="ckEmailErr"></span>
+        </div>
+        <div class="form-group">
+          <label>Address Line 1 *</label>
+          <input type="text" id="ckAddr1" placeholder="House / Flat No., Building Name"/>
+          <span class="form-error" id="ckAddr1Err"></span>
+        </div>
+        <div class="form-group">
+          <label>Address Line 2</label>
+          <input type="text" id="ckAddr2" placeholder="Street, Locality (optional)"/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>City *</label>
+            <input type="text" id="ckCity" placeholder="Mumbai"/>
+            <span class="form-error" id="ckCityErr"></span>
+          </div>
+          <div class="form-group">
+            <label>State *</label>
+            <select id="ckState">
+              <option value="">Select state</option>
+              <option>Andhra Pradesh</option><option>Delhi</option><option>Goa</option>
+              <option>Gujarat</option><option>Karnataka</option><option>Kerala</option>
+              <option>Maharashtra</option><option>Punjab</option><option>Rajasthan</option>
+              <option>Tamil Nadu</option><option>Telangana</option><option>Uttar Pradesh</option>
+              <option>West Bengal</option><option>Other</option>
+            </select>
+            <span class="form-error" id="ckStateErr"></span>
+          </div>
+          <div class="form-group">
+            <label>PIN Code *</label>
+            <input type="text" id="ckPin" placeholder="400050" maxlength="6"/>
+            <span class="form-error" id="ckPinErr"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment method -->
+      <div class="checkout-section">
+        <p class="checkout-section-title"><span class="cs-num">2</span> Payment Method</p>
+
+        <div class="pay-tabs">
+          <button class="pay-tab active" id="ptCard" onclick="switchPayTab('card')">
+            <i class="fas fa-credit-card"></i> Card
+          </button>
+          <button class="pay-tab" id="ptUpi" onclick="switchPayTab('upi')">
+            <i class="fas fa-mobile-alt"></i> UPI
+          </button>
+          <button class="pay-tab" id="ptWallet" onclick="switchPayTab('wallet')">
+            <i class="fas fa-wallet"></i> Wallet
+          </button>
+          <button class="pay-tab" id="ptCod" onclick="switchPayTab('cod')">
+            <i class="fas fa-truck"></i> Cash on Delivery
+          </button>
+        </div>
+
+        <!-- Card panel -->
+        <div class="pay-panel active" id="panelCard">
+          <div class="card-brands">
+            <span class="card-brand-chip">VISA</span>
+            <span class="card-brand-chip">Mastercard</span>
+            <span class="card-brand-chip">RuPay</span>
+            <span class="card-brand-chip">Amex</span>
+          </div>
+          <div class="form-group card-field-wrap">
+            <label>Card Number *</label>
+            <i class="fas fa-lock"></i>
+            <input type="text" id="ckCardNum" placeholder="1234  5678  9012  3456" maxlength="19" oninput="formatCardNum(this)"/>
+            <span class="form-error" id="ckCardNumErr"></span>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Expiry Date *</label>
+              <input type="text" id="ckExpiry" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)"/>
+              <span class="form-error" id="ckExpiryErr"></span>
+            </div>
+            <div class="form-group card-field-wrap">
+              <label>CVV *</label>
+              <i class="fas fa-question-circle"></i>
+              <input type="password" id="ckCvv" placeholder="•••" maxlength="4"/>
+              <span class="form-error" id="ckCvvErr"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Name on Card *</label>
+            <input type="text" id="ckCardName" placeholder="PRIYA SHARMA"/>
+            <span class="form-error" id="ckCardNameErr"></span>
+          </div>
+        </div>
+
+        <!-- UPI panel -->
+        <div class="pay-panel" id="panelUpi">
+          <div class="form-group">
+            <label>UPI ID *</label>
+            <div class="upi-wrap">
+              <input type="text" id="ckUpiId" placeholder="priya@upi or 9876543210@paytm"/>
+              <button class="btn-verify-upi" onclick="verifyUpi()">Verify</button>
+            </div>
+            <span class="form-error" id="ckUpiErr"></span>
+          </div>
+        </div>
+
+        <!-- Wallet panel -->
+        <div class="pay-panel" id="panelWallet">
+          <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;">Select your preferred wallet</p>
+          <div class="wallet-grid">
+            <div class="wallet-opt" onclick="selectWallet(this)"><i class="fas fa-rupee-sign"></i>Paytm</div>
+            <div class="wallet-opt" onclick="selectWallet(this)"><i class="fas fa-mobile-alt"></i>PhonePe</div>
+            <div class="wallet-opt" onclick="selectWallet(this)"><i class="fab fa-google-pay"></i>GPay</div>
+            <div class="wallet-opt" onclick="selectWallet(this)"><i class="fas fa-coins"></i>Freecharge</div>
+            <div class="wallet-opt" onclick="selectWallet(this)"><i class="fas fa-money-bill-wave"></i>Mobikwik</div>
+            <div class="wallet-opt" onclick="selectWallet(this)"><i class="fas fa-credit-card"></i>Amazon Pay</div>
+          </div>
+          <span class="form-error" id="ckWalletErr" style="margin-top:0.5rem;display:block;"></span>
+        </div>
+
+        <!-- COD panel -->
+        <div class="pay-panel" id="panelCod">
+          <div class="cod-notice">
+            <i class="fas fa-info-circle"></i>
+            <div>
+              <strong>Cash on Delivery available</strong><br>
+              Pay ₹50 extra as handling fee. Applicable on orders under ₹5,000. We'll collect cash when your order arrives.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coupon -->
+      <div class="checkout-section">
+        <p class="checkout-section-title"><span class="cs-num">3</span> Promo Code</p>
+        <div class="coupon-row">
+          <input type="text" id="ckCoupon" placeholder="Enter coupon code (try GLOW10)"/>
+          <button class="btn-apply-coupon" onclick="applyCoupon()">Apply</button>
+        </div>
+        <p class="coupon-feedback" id="couponMsg"></p>
+      </div>
+
+      <!-- CTA -->
+      <div class="checkout-cta">
+        <button class="btn-place-order" onclick="placeOrder()">
+          <i class="fas fa-lock"></i> Place Order Securely
+        </button>
+        <div class="secure-tags">
+          <span><i class="fas fa-shield-alt"></i> SSL Encrypted</span>
+          <span><i class="fas fa-undo"></i> 15-day Returns</span>
+          <span><i class="fas fa-truck"></i> Free Ship ₹2,500+</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Order summary -->
+    <div class="checkout-summary">
+      <div class="summary-header">Order Summary</div>
+      <div class="summary-items" id="ckSummaryItems">
+        <p class="summary-empty">Add items to your bag first.</p>
+      </div>
+      <div class="summary-totals" id="ckSummaryTotals" style="display:none">
+        <div class="summary-row"><span>Subtotal</span><span id="ckSubtotal">₹0</span></div>
+        <div class="summary-row"><span>Shipping</span><span id="ckShipping">₹0</span></div>
+        <div class="summary-row" id="ckDiscountRow" style="display:none"><span>Discount</span><span class="discount" id="ckDiscount">-₹0</span></div>
+        <div class="summary-row" id="ckCodRow" style="display:none"><span>COD Handling</span><span>₹50</span></div>
+        <div class="summary-row grand"><span>Total</span><span id="ckGrand">₹0</span></div>
+      </div>
+      <div class="delivery-promise">
+        <i class="fas fa-box-open"></i>
+        <span>Estimated delivery in <strong>3–5 business days</strong> across India.</span>
+      </div>
+
+      <!-- Success state (shown after order placed) -->
+      <div class="checkout-success" id="ckSuccess">
+        <div class="success-ring">🎉</div>
+        <h3 style="font-family:var(--font-display);">Order Placed!</h3>
+        <p class="success-order-id" id="ckOrderId">Order #SOY-000000</p>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem;">We've sent a confirmation to your email. Your skin journey starts now!</p>
+        <button class="btn-primary" onclick="showPage('home')">Back to Home →</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer"><div class="container"><hr class="footer-line"/><p class="footer-copy">&copy; 2024 Shades of You. All rights reserved.</p></div></footer>
+</div>
+
+<!-- CART -->
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header"><h5>Your Bag</h5><button onclick="toggleCart()" aria-label="Close cart"><i class="fas fa-times"></i></button></div>
+  <div class="cart-items" id="cartItems"><p class="cart-empty">Your bag is empty.</p></div>
+  <div id="cartFooter" style="display:none">
+    <div class="cart-footer">
+      <div class="cart-total">Total <strong id="cartTotal">₹0</strong></div>
+      <button class="btn-primary w100" onclick="openCheckout()">Proceed to Checkout →</button>
+    </div>
+  </div>
+</div>
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+
+<!-- CHATBOT -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()" aria-label="Open chat"><i class="fas fa-comment-dots"></i></button>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-avatar">🌿</div>
+      <div>
+        <p class="chat-name">Sage</p>
+        <small class="chat-status" id="chatStatus">AI · Powered by Gemini</small>
+      </div>
+    </div>
+    <div class="chat-header-actions">
+      <button type="button" class="chat-settings-btn" onclick="toggleChatApiPanel()" aria-label="API settings" title="API key"><i class="fas fa-key"></i></button>
+      <button type="button" onclick="toggleChat()" aria-label="Close chat">✕</button>
+    </div>
+  </div>
+  <div class="chat-api-panel" id="chatApiPanel">
+    <p class="chat-api-label">Google Gemini API key <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Get key</a></p>
+    <div class="chat-api-row">
+      <input type="password" id="chatApiKeyInput" placeholder="Paste your API key" autocomplete="off"/>
+      <button type="button" onclick="saveChatApiKey()">Save</button>
+    </div>
+    <p class="chat-api-hint" id="chatApiHint">Required for real AI answers — stored only in your browser.</p>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-bubble bot" id="chatWelcome">Hi! I'm Sage 🌿 I use AI to answer any skincare question — routines, ingredients, orders, or consultations.</div>
+    <div class="chat-typing" id="chatTyping" style="display:none">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <div class="quick-replies" id="quickReplies">
+    <button type="button" onclick="quickReply('What routine suits combination skin in humid weather?')">Routine tips</button>
+    <button type="button" onclick="quickReply('Which SPF has no white cast for Indian skin?')">SPF help</button>
+    <button type="button" onclick="quickReply('How do I track my order?')">My orders</button>
+    <button type="button" onclick="quickReply('How do I book a free skin consultation?')">Book consult</button>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Ask anything about skincare..." onkeydown="if(event.key==='Enter') sendChat()"/>
+    <button type="button" onclick="sendChat()" aria-label="Send message" id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- MY ORDERS MODAL -->
+<div class="orders-overlay" id="ordersOverlay" onclick="closeMyOrders()"></div>
+<div class="orders-modal" id="ordersModal" role="dialog" aria-labelledby="ordersModalTitle">
+  <div class="orders-modal-header">
+    <h3 id="ordersModalTitle">My <em>Orders</em></h3>
+    <button type="button" onclick="closeMyOrders()" aria-label="Close"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="orders-modal-body" id="ordersModalBody">
+    <p class="orders-empty">No orders yet. Complete checkout to see them here.</p>
+  </div>
+</div>
+
+<div id="customCursor"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
