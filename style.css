@@ -4,19 +4,19 @@
    ============================================= */
 
 :root {
-  /* Crimson / Wine / Rose palette — NO BLUE */
-  --cream: #FDF6F0;
-  --sand: #F5E8E0;
-  --ink: #2D0A0A;
-  --ocean: #8B1A1A;          /* was teal/ocean — now deep crimson */
-  --ocean-deep: #5C0A0A;     /* was ocean-deep — now darker wine */
-  --gold: #E8896A;           /* warm rose-coral accent */
-  --gold-dark: #C45C3A;      /* deeper terracotta */
-  --coral: #F0C4B0;
-  --seafoam: #F2D5CC;        /* was seafoam blue — now blush */
-  --muted: #8A5A52;
+  /* Pink Lemonade & Slime Margarita palette */
+  --cream: #F5FAD4;           /* light lime tint background */
+  --sand: #ECF5A0;            /* slightly deeper lime */
+  --ink: #1A1A1A;             /* near-black text */
+  --ocean: #FF5097;           /* Pink Lemonade — primary brand pink */
+  --ocean-deep: #D4006E;      /* deeper hot pink for hover/depth */
+  --gold: #E4F482;            /* Slime Margarita — lime accent */
+  --gold-dark: #B8CC00;       /* deeper lime-yellow for hover */
+  --coral: #FFB3D4;           /* soft pink tint */
+  --seafoam: #D8F060;         /* bright lime tint */
+  --muted: #7A6B50;           /* warm neutral muted text */
   --white: #FFFFFF;
-  --card: #F5E0D8;
+  --card: #EEF7C0;            /* lime-tinted card bg */
   --success: #6B8A3D;
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'Jost', sans-serif;
@@ -63,22 +63,25 @@ button { font-family: var(--font-body); border: none; background: none; }
   z-index: 9999;
   transform: translate(-50%, -50%);
   transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), transform 0.06s linear;
-  border: 1.5px solid rgba(255,255,255,0.9);
-  box-shadow: 0 0 0 1px rgba(45,10,10,0.5), inset 0 0 0 1px rgba(45,10,10,0.1);
+  border: 2.5px solid #FF5097;           /* Pink Lemonade ring */
+  box-shadow: 0 0 0 1px rgba(255,80,151,0.3), inset 0 0 0 1px rgba(228,244,130,0.15);
+  background: rgba(255,80,151,0.08);
 }
 #customCursor::after {
   content: '';
   position: absolute;
   top: 50%; left: 50%;
-  width: 6px; height: 6px;
-  background: var(--ocean-deep);
+  width: 8px; height: 8px;
+  background: #E4F482;                   /* Slime Margarita dot */
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 1.5px rgba(255,255,255,0.85);
+  box-shadow: 0 0 0 2px #FF5097, 0 0 8px rgba(228,244,130,0.6);  /* pink halo around lime dot */
   transition: width 0.3s, height 0.3s;
 }
 #customCursor.enlarged {
   width: 54px; height: 54px;
+  background: rgba(228,244,130,0.12);
+  border-color: #E4F482;
 }
 #customCursor.enlarged::after {
   width: 4px; height: 4px; opacity: 0.4;
@@ -93,7 +96,7 @@ button { font-family: var(--font-body); border: none; background: none; }
 /* ── Page transition ── */
 #pageTransition {
   position: fixed; inset: 0; z-index: 8000;
-  background: var(--ocean);
+  background: #FF5097;
   transform: translateX(-100%);
   pointer-events: none;
 }
@@ -108,7 +111,7 @@ button { font-family: var(--font-body); border: none; background: none; }
   display: flex;
   width: 100vw; height: 100vh;
   overflow: hidden;
-  background: var(--cream);
+  background: #F5FAD4;
   transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
 }
 #authGate.hidden {
@@ -134,11 +137,11 @@ button { font-family: var(--font-body); border: none; background: none; }
 }
 .auth-panel {
   background: var(--white);
-  box-shadow: -8px 0 40px rgba(92,10,10,0.08);
+  box-shadow: -8px 0 40px rgba(255,80,151,0.12);
 }
 .auth-welcome-tag {
   font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--ocean); margin-bottom: 0.25rem;
+  color: #FF5097; margin-bottom: 0.25rem;
 }
 .auth-right {
   flex: 0 0 420px;
@@ -167,23 +170,23 @@ button { font-family: var(--font-body); border: none; background: none; }
   display: flex; align-items: flex-start; gap: 0.5rem;
   font-size: 0.78rem; color: var(--muted); cursor: pointer; margin-top: 0.25rem;
 }
-.auth-remember input { accent-color: var(--ocean); margin-top: 0.15rem; }
+.auth-remember input { accent-color: #FF5097; margin-top: 0.15rem; }
 .auth-logo { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 1rem; }
-.auth-logo em { font-style: italic; color: var(--gold-dark); }
+.auth-logo em { font-style: italic; color: #FF5097; }
 .auth-tabs { display: flex; border-bottom: 1px solid var(--card); margin-bottom: 1.5rem; }
 .auth-tab {
   flex: 1; padding: 0.75rem; cursor: none;
   font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.3s;
 }
-.auth-tab.active { color: var(--ink); border-bottom-color: var(--gold); }
+.auth-tab.active { color: var(--ink); border-bottom-color: #FF5097; }
 .auth-form { display: none; flex-direction: column; gap: 1.2rem; }
 .auth-form.active { display: flex; }
 .auth-heading {
   font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);
   line-height: 1.1; margin-bottom: 0.5rem;
 }
-.auth-heading em { font-style: italic; color: var(--gold-dark); }
+.auth-heading em { font-style: italic; color: #FF5097; }
 .auth-field { display: flex; flex-direction: column; gap: 0.4rem; }
 .auth-field label { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .auth-field input {
@@ -191,21 +194,21 @@ button { font-family: var(--font-body); border: none; background: none; }
   padding: 0.85rem 1rem; font-family: var(--font-body); font-size: 0.9rem;
   background: var(--white); color: var(--ink); outline: none; transition: border-color 0.3s;
 }
-.auth-field input:focus { border-color: var(--gold); }
+.auth-field input:focus { border-color: #FF5097; }
 .auth-err { font-size: 0.75rem; color: #c0392b; min-height: 1rem; }
-.auth-forgot { font-size: 0.78rem; color: var(--gold-dark); cursor: none; align-self: flex-end; }
+.auth-forgot { font-size: 0.78rem; color: #D4006E; cursor: none; align-self: flex-end; }
 .btn-auth {
-  background: linear-gradient(135deg, var(--ocean) 0%, var(--ocean-deep) 100%);
+  background: linear-gradient(135deg, #FF5097 0%, #D4006E 100%);
   color: var(--white); border-radius: 8px; padding: 1rem;
   font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
   cursor: none; transition: background 0.3s, transform 0.2s;
 }
-.btn-auth:hover { background: var(--gold-dark); transform: translateY(-1px); filter: brightness(1.05); }
+.btn-auth:hover { background: #E4F482; color: #1A1A1A; transform: translateY(-1px); filter: brightness(1.05); }
 .auth-guest {
   text-align: center; font-size: 0.8rem; color: var(--muted);
   cursor: none; margin-top: 0.5rem; text-decoration: underline;
 }
-.auth-guest:hover { color: var(--gold-dark); }
+.auth-guest:hover { color: #FF5097; }
 
 /* ── Loader ── */
 #loader {
@@ -216,9 +219,9 @@ button { font-family: var(--font-body); border: none; background: none; }
 }
 #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .loader-logo { font-family: var(--font-display); font-size: 2rem; margin-bottom: 1.5rem; }
-.loader-logo em { font-style: italic; color: var(--gold-dark); }
+.loader-logo em { font-style: italic; color: #FF5097; }
 .loader-bar { width: 150px; height: 2px; background: var(--card); border-radius: 2px; overflow: hidden; }
-.loader-fill { height: 100%; background: var(--ocean); animation: fillBar 1.2s var(--ease-out) forwards; }
+.loader-fill { height: 100%; background: #FF5097; animation: fillBar 1.2s var(--ease-out) forwards; }
 @keyframes fillBar { from { width: 0; } to { width: 100%; } }
 
 /* ── SPA pages ── */
@@ -229,11 +232,13 @@ button { font-family: var(--font-body); border: none; background: none; }
 #navbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 800;
   padding: 1.1rem 0; transition: all var(--transition);
+  background: #FF5097;               /* Pink Lemonade — solid, always visible */
+  box-shadow: 0 2px 0 #D4006E;
 }
 #navbar.scrolled {
-  background: rgba(253,246,240,0.96);
+  background: #FF5097;
   backdrop-filter: blur(16px);
-  box-shadow: 0 1px 0 var(--card);
+  box-shadow: 0 2px 8px rgba(212,0,110,0.35);
   padding: 0.75rem 0;
 }
 .nav-container {
@@ -242,11 +247,11 @@ button { font-family: var(--font-body); border: none; background: none; }
 }
 .nav-logo {
   font-family: var(--font-display); font-size: 1.45rem;
-  color: var(--white); cursor: none; white-space: nowrap; transition: color 0.3s;
+  color: #E4F482; cursor: none; white-space: nowrap; transition: color 0.3s;
 }
-.nav-logo em { font-style: italic; color: var(--gold); }
-#navbar.scrolled .nav-logo { color: var(--ocean-deep); }
-#navbar.scrolled .nav-logo em { color: var(--gold-dark); }
+.nav-logo em { font-style: italic; color: #fff; }
+#navbar.scrolled .nav-logo { color: #E4F482; }
+#navbar.scrolled .nav-logo em { color: #fff; }
 
 /* ── Profile menu ── */
 .nav-profile { position: relative; }
@@ -254,12 +259,12 @@ button { font-family: var(--font-body); border: none; background: none; }
   display: flex; align-items: center; gap: 0.5rem;
   padding: 0.35rem 0.75rem 0.35rem 0.35rem;
   border-radius: 100px;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.25);
-  cursor: none; transition: all 0.3s; color: #fff;
+  background: rgba(228,244,130,0.2);
+  border: 1.5px solid #E4F482;
+  cursor: none; transition: all 0.3s; color: #E4F482;
 }
 #navbar.scrolled .profile-btn {
-  background: var(--white); border-color: var(--card); color: var(--ink);
+  background: rgba(228,244,130,0.2); border-color: #E4F482; color: #E4F482;
 }
 .profile-avatar {
   width: 32px; height: 32px; border-radius: 50%;
@@ -297,55 +302,55 @@ button { font-family: var(--font-body); border: none; background: none; }
 }
 .nav-menu { display: flex; align-items: center; gap: 0.1rem; }
 .nav-link {
-  font-size: 0.72rem; font-weight: 400; letter-spacing: 0.14em;
-  text-transform: uppercase; color: rgba(255,255,255,0.75);
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #E4F482;        /* Slime Margarita — high contrast on pink */
   padding: 0.35rem 0.85rem; cursor: none; position: relative; transition: color 0.3s;
 }
-#navbar.scrolled .nav-link { color: var(--muted); }
+#navbar.scrolled .nav-link { color: #E4F482; }
 .nav-link::after {
   content: ''; position: absolute; bottom: -2px; left: 0.85rem; right: 0.85rem;
-  height: 1px; background: var(--gold);
+  height: 2px; background: #fff;
   transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
 }
 .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
 .nav-link:hover, .nav-link.active { color: #fff; }
-#navbar.scrolled .nav-link:hover, #navbar.scrolled .nav-link.active { color: var(--ink); }
+#navbar.scrolled .nav-link:hover, #navbar.scrolled .nav-link.active { color: #fff; }
 .nav-actions { display: flex; align-items: center; gap: 0.8rem; }
 .cart-btn {
   position: relative; font-size: 1rem;
-  color: rgba(255,255,255,0.85); cursor: none; padding: 0.3rem; transition: color 0.3s;
+  color: #E4F482; cursor: none; padding: 0.3rem; transition: color 0.3s;
 }
-#navbar.scrolled .cart-btn { color: var(--ink); }
+#navbar.scrolled .cart-btn { color: #E4F482; }
 .cart-badge {
   position: absolute; top: -6px; right: -8px;
-  width: 17px; height: 17px; background: var(--ocean); color: var(--white);
-  font-size: 0.52rem; font-weight: 600; border-radius: 50%;
+  width: 17px; height: 17px; background: #E4F482; color: #1A1A1A;
+  font-size: 0.52rem; font-weight: 700; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
 }
 .hamburger {
-  display: none; font-size: 1rem; color: rgba(255,255,255,0.85); cursor: none;
+  display: none; font-size: 1rem; color: #E4F482; cursor: none;
 }
-#navbar.scrolled .hamburger { color: var(--ink); }
+#navbar.scrolled .hamburger { color: #E4F482; }
 
 /* ── Buttons ── */
 .btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
   padding: 0.85rem 2rem;
-  background: linear-gradient(135deg, var(--ocean) 0%, var(--ocean-deep) 100%);
+  background: linear-gradient(135deg, #FF5097 0%, #D4006E 100%);
   color: var(--white);
   font-size: 0.74rem; font-weight: 500; letter-spacing: 0.12em;
   text-transform: uppercase; border-radius: 100px; cursor: none;
   transition: all 0.3s var(--ease-out);
 }
-.btn-primary:hover { background: var(--gold-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(196,92,58,0.35); }
+.btn-primary:hover { background: #E4F482; color: #1A1A1A; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(228,244,130,0.45); }
 .btn-ghost {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 0.85rem 2rem; background: transparent; color: var(--white);
   font-size: 0.74rem; font-weight: 500; letter-spacing: 0.12em;
-  text-transform: uppercase; border: 1.5px solid rgba(255,255,255,0.45);
+  text-transform: uppercase; border: 1.5px solid rgba(255,255,255,0.55);
   border-radius: 100px; cursor: none; transition: all 0.3s;
 }
-.btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.1); }
+.btn-ghost:hover { border-color: #E4F482; background: rgba(228,244,130,0.15); color: #E4F482; }
 .btn-outline {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 0.85rem 2rem; border: 1.5px solid var(--ink); color: var(--ink);
@@ -358,21 +363,21 @@ button { font-family: var(--font-body); border: none; background: none; }
 /* ── Typography ── */
 .eyebrow {
   font-size: 0.72rem; font-weight: 400; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--gold-dark); margin-bottom: 0.6rem;
+  text-transform: uppercase; color: #FF5097; margin-bottom: 0.6rem;
 }
 .eyebrow-center {
   font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold-dark); text-align: center; margin-bottom: 0.6rem;
+  color: #FF5097; text-align: center; margin-bottom: 0.6rem;
 }
 .eyebrow-white {
   font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: rgba(255,255,255,0.55); text-align: center; margin-bottom: 0.6rem;
+  color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 0.6rem;
 }
 .section-title-center {
   font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 700; text-align: center; line-height: 1.15; margin-bottom: 2rem;
 }
-.section-title-center em { font-style: italic; color: var(--gold-dark); }
+.section-title-center em { font-style: italic; color: #FF5097; }
 .container { max-width: 1220px; margin: 0 auto; padding: 0 1.5rem; }
 
 /* ── Scroll reveal ── */
@@ -1207,6 +1212,55 @@ button { font-family: var(--font-body); border: none; background: none; }
    CHECKOUT PAGE
 ══════════════════════════════════════════ */
 #page-checkout .page-header { background: linear-gradient(135deg, var(--ocean-deep) 0%, var(--ocean) 100%); }
+
+/* ── Consultation page header ── */
+.consult-header {
+  background: none;
+}
+.consult-header-bg {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  z-index: 0;
+}
+.consult-header-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.35) 100%);
+  z-index: 1;
+}
+.consult-header-content {
+  position: relative; z-index: 2;
+}
+.consult-header h1 {
+  color: #fff;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+}
+.consult-header h1 em {
+  color: var(--coral);
+  font-style: italic;
+}
+.consult-header .eyebrow-white {
+  color: #fff;
+  opacity: 0.9;
+}
+.consult-header .page-header-sub {
+  color: rgba(255,255,255,0.85);
+}
+
+/* ── Expert avatar (Dr. Ananya) ── */
+.expert-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--gold);
+}
+.expert-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
 
 .checkout-layout {
   display: grid; grid-template-columns: 1fr 380px; gap: 2.5rem;
